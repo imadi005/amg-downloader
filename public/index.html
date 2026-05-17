@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMG Downloader</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080808;
+      --surface: #111111;
+      --border: #1e1e1e;
+      --border-light: #2a2a2a;
+      --text: #f0f0f0;
+      --muted: #555;
+      --accent: #e8ff47;
+      --accent-dim: #b8cc38;
+      --red: #ff4545;
+      --green: #4ade80;
+      --mono: 'DM Mono', monospace;
+      --sans: 'Syne', sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232,255,71,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,255,71,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    /* Glow blob */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: -10%;
+      width: 60vw;
+      height: 60vw;
+      background: radial-gradient(circle, rgba(232,255,71,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 560px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-icon svg { width: 20px; height: 20px; }
+
+    .brand-name {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    .brand-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+
+    h1 span { color: var(--accent); }
+
+    .subtitle {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 32px;
+      letter-spacing: 0.05em;
+    }
+
+    /* Format Toggle */
+    .format-toggle {
+      display: flex;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 16px;
+      gap: 4px;
+    }
+
+    .format-btn {
+      flex: 1;
+      padding: 9px 0;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .format-btn.active {
+      background: var(--accent);
+      color: #000;
+    }
+
+    /* Inputs */
+    .field {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      padding: 13px 16px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input::placeholder { color: var(--muted); }
+    input:focus { border-color: var(--accent); }
+
+    /* Download Button */
+    .btn {
+      width: 100%;
+      padding: 15px;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: #f0ff6e;
+      transform: translateY(-1px);
+    }
+
+    .btn:active:not(:disabled) { transform: translateY(0); }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Progress */
+    .progress-section {
+      display: none;
+      margin-top: 24px;
+    }
+
+    .progress-section.visible { display: block; }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .progress-label {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .progress-pct {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    .progress-bar-track {
+      height: 4px;
+      background: var(--border-light);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 99px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .progress-meta {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      gap: 16px;
+    }
+
+    /* Status messages */
+    .status-msg {
+      display: none;
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-family: var(--mono);
+      font-size: 13px;
+      margin-top: 16px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-msg.visible { display: flex; }
+
+    .status-msg.error {
+      background: rgba(255,69,69,0.1);
+      border: 1px solid rgba(255,69,69,0.2);
+      color: var(--red);
+    }
+
+    .status-msg.success {
+      background: rgba(74,222,128,0.08);
+      border: 1px solid rgba(74,222,128,0.2);
+      color: var(--green);
+    }
+
+    .download-link {
+      display: none;
+      width: 100%;
+      padding: 14px;
+      background: transparent;
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      color: var(--accent);
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-align: center;
+      text-decoration: none;
+      margin-top: 16px;
+      transition: all 0.2s;
+    }
+
+    .download-link.visible { display: block; }
+    .download-link:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 28px 0;
+    }
+
+    .footer {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      letter-spacing: 0.05em;
+    }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(0,0,0,0.2);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <div class="brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand-name">AMG Productions</div>
+      <div class="brand-tag">internal tool — v1.0</div>
+    </div>
+  </div>
+
+  <h1>Download<br/><span>Any Video</span></h1>
+  <p class="subtitle">// premiere-ready mp4 · h264 + aac · highest quality</p>
+
+  <!-- Format Toggle -->
+  <div class="format-toggle">
+    <button class="format-btn active" id="btn-mp4" onclick="setFormat('mp4')">MP4 Video</button>
+    <button class="format-btn" id="btn-audio" onclick="setFormat('audio')">MP3 Audio</button>
+  </div>
+
+  <!-- URL -->
+  <div class="field">
+    <label>YouTube URL</label>
+    <input type="url" id="url-input" placeholder="https://youtube.com/watch?v=..." />
+  </div>
+
+  <!-- Password -->
+  <div class="field">
+    <label>Team Password</label>
+    <input type="password" id="pwd-input" placeholder="••••••••" />
+  </div>
+
+  <button class="btn" id="dl-btn" onclick="startDownload()">
+    Download
+  </button>
+
+  <!-- Progress -->
+  <div class="progress-section" id="progress-section">
+    <div class="progress-header">
+      <span class="progress-label" id="progress-label">Connecting...</span>
+      <span class="progress-pct" id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+    <div class="progress-meta">
+      <span id="meta-speed"></span>
+      <span id="meta-eta"></span>
+    </div>
+  </div>
+
+  <!-- Status Messages -->
+  <div class="status-msg error" id="error-msg">
+    <span>⚠</span>
+    <span id="error-text">Something went wrong.</span>
+  </div>
+
+  <a class="download-link" id="dl-link" href="#" download>
+    Save File to Computer
+  </a>
+
+  <div class="divider"></div>
+  <div class="footer">Premiere-ready H.264 + AAC · No AV1 issues · AMG Internal Use Only</div>
+
+</div>
+
+<script>
+  let currentFormat = 'mp4';
+  let currentJobId = null;
+  let eventSource = null;
+
+  function setFormat(fmt) {
+    currentFormat = fmt;
+    document.getElementById('btn-mp4').classList.toggle('active', fmt === 'mp4');
+    document.getElementById('btn-audio').classList.toggle('active', fmt === 'audio');
+  }
+
+  function resetUI() {
+    document.getElementById('progress-section').classList.remove('visible');
+    document.getElementById('error-msg').classList.remove('visible');
+    document.getElementById('dl-link').classList.remove('visible');
+    document.getElementById('progress-fill').style.width = '0%';
+    document.getElementById('progress-pct').textContent = '0%';
+    document.getElementById('meta-speed').textContent = '';
+    document.getElementById('meta-eta').textContent = '';
+    document.getElementById('progress-label').textContent = 'Connecting...';
+  }
+
+  function setBtn(loading) {
+    const btn = document.getElementById('dl-btn');
+    btn.disabled = loading;
+    btn.innerHTML = loading
+      ? '<span class="spinner"></span>Processing...'
+      : 'Download';
+  }
+
+  async function startDownload() {
+    const url = document.getElementById('url-input').value.trim();
+    const password = document.getElementById('pwd-input').value.trim();
+
+    if (!url) return showError('Paste a YouTube URL first.');
+    if (!password) return showError('Enter the team password.');
+
+    if (eventSource) { eventSource.close(); eventSource = null; }
+    resetUI();
+    setBtn(true);
+
+    try {
+      const res = await fetch('/api/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, format: currentFormat, password })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setBtn(false);
+        return showError(data.error || 'Request failed.');
+      }
+
+      currentJobId = data.jobId;
+      listenProgress(currentJobId);
+
+    } catch (err) {
+      setBtn(false);
+      showError('Network error. Is the server running?');
+    }
+  }
+
+  function listenProgress(jobId) {
+    document.getElementById('progress-section').classList.add('visible');
+    eventSource = new EventSource(`/api/progress/${jobId}`);
+
+    eventSource.onmessage = (e) => {
+      const msg = JSON.parse(e.data);
+
+      if (msg.type === 'progress') {
+        const pct = Math.round(msg.progress);
+        document.getElementById('progress-fill').style.width = pct + '%';
+        document.getElementById('progress-pct').textContent = pct + '%';
+        document.getElementById('progress-label').textContent =
+          pct < 99 ? 'Downloading...' : (msg.eta || 'Processing...');
+        if (msg.speed) document.getElementById('meta-speed').textContent = msg.speed;
+        if (msg.eta && pct < 99) document.getElementById('meta-eta').textContent = 'ETA ' + msg.eta;
+      }
+
+      if (msg.type === 'done') {
+        document.getElementById('progress-fill').style.width = '100%';
+        document.getElementById('progress-pct').textContent = '100%';
+        document.getElementById('progress-label').textContent = 'Done!';
+        document.getElementById('meta-speed').textContent = '';
+        document.getElementById('meta-eta').textContent = '';
+
+        const link = document.getElementById('dl-link');
+        link.href = `/api/file/${msg.jobId}`;
+        link.textContent = `Save — ${msg.filename}`;
+        link.classList.add('visible');
+
+        setBtn(false);
+        eventSource.close();
+      }
+
+      if (msg.type === 'error') {
+        showError(msg.message);
+        setBtn(false);
+        eventSource.close();
+      }
+    };
+
+    eventSource.onerror = () => {
+      showError('Connection lost. Try again.');
+      setBtn(false);
+      eventSource.close();
+    };
+  }
+
+  function showError(msg) {
+    document.getElementById('error-text').textContent = msg;
+    document.getElementById('error-msg').classList.add('visible');
+  }
+
+  // Enter key trigger
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') startDownload();
+  });
+</script>
+
+</body>
+</html>
