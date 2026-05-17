@@ -30,9 +30,20 @@ app.post('/api/start', (req, res) => {
   const jobId = uuidv4();
   const outputTemplate = path.join(DOWNLOAD_DIR, `${jobId}_%(title)s.%(ext)s`);
 
+  // Base flags: fix JS runtime + bypass bot detection
+  const cookiesFile = '/app/cookies.txt';
+  const cookiesArgs = fs.existsSync(cookiesFile) ? ['--cookies', cookiesFile] : [];
+  const baseArgs = [
+    '--js-runtimes', 'node',
+    '--extractor-args', 'youtube:player_client=android,web',
+    '--no-check-certificates',
+    ...cookiesArgs
+  ];
+
   let args;
   if (format === 'audio') {
     args = [
+      ...baseArgs,
       '-x', '--audio-format', 'mp3',
       '--audio-quality', '0',
       '--embed-metadata',
@@ -41,6 +52,7 @@ app.post('/api/start', (req, res) => {
     ];
   } else {
     args = [
+      ...baseArgs,
       '-f', 'bestvideo[vcodec^=avc1]+bestaudio[acodec^=mp4a]/bestvideo[vcodec^=avc1]+bestaudio/best',
       '--merge-output-format', 'mp4',
       '--postprocessor-args', 'ffmpeg:-c:a aac',
