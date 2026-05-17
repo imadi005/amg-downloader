@@ -46,9 +46,8 @@ app.post('/api/start', (req, res) => {
   const cookiesFile = process.env.COOKIES_BASE64 ? COOKIES_FILE : '/app/cookies.txt';
   const cookiesArgs = fs.existsSync(cookiesFile) ? ['--cookies', cookiesFile] : [];
   const baseArgs = [
-    '--js-runtimes', 'node',
-    '--remote-components', 'ejs:github',
-    '--extractor-args', 'youtube:player_client=web',
+    '--js-runtimes', 'deno,node',
+    '--extractor-args', 'youtube:player_client=web,tv_embedded',
     '--no-check-certificates',
     ...cookiesArgs
   ];
