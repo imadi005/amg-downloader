@@ -47,7 +47,7 @@ app.post('/api/start', (req, res) => {
   const cookiesArgs = fs.existsSync(cookiesFile) ? ['--cookies', cookiesFile] : [];
   const baseArgs = [
     '--js-runtimes', 'node',
-    '--extractor-args', 'youtube:player_client=android,web',
+    '--extractor-args', 'youtube:player_client=web',
     '--no-check-certificates',
     ...cookiesArgs
   ];
