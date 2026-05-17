@@ -16,10 +16,8 @@
       --border-light: #2a2a2a;
       --text: #f0f0f0;
       --muted: #555;
-      --accent: #e8ff47;
-      --accent-dim: #b8cc38;
-      --red: #ff4545;
-      --green: #4ade80;
+      --accent: #e62020;
+      --accent-hover: #ff3333;
       --mono: 'DM Mono', monospace;
       --sans: 'Syne', sans-serif;
     }
@@ -42,33 +40,31 @@
       overflow: hidden;
     }
 
-    /* Background grid */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       background-image:
-        linear-gradient(rgba(232,255,71,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(232,255,71,0.03) 1px, transparent 1px);
+        linear-gradient(rgba(230,32,32,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(230,32,32,0.04) 1px, transparent 1px);
       background-size: 40px 40px;
       pointer-events: none;
     }
 
-    /* Glow blob */
     body::after {
       content: '';
       position: fixed;
       top: -20%;
-      left: -10%;
+      right: -10%;
       width: 60vw;
       height: 60vw;
-      background: radial-gradient(circle, rgba(232,255,71,0.04) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(230,32,32,0.07) 0%, transparent 70%);
       pointer-events: none;
     }
 
     .card {
       width: 100%;
-      max-width: 560px;
+      max-width: 540px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 20px;
@@ -91,21 +87,24 @@
     }
 
     .brand-icon {
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       background: var(--accent);
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+      font-family: var(--sans);
+      letter-spacing: -1px;
     }
 
-    .brand-icon svg { width: 20px; height: 20px; }
-
     .brand-name {
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--text);
     }
@@ -114,13 +113,13 @@
       font-family: var(--mono);
       font-size: 11px;
       color: var(--muted);
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
     }
 
     h1 {
-      font-size: 28px;
+      font-size: 30px;
       font-weight: 800;
-      line-height: 1.15;
+      line-height: 1.1;
       margin-bottom: 6px;
       letter-spacing: -0.02em;
     }
@@ -129,13 +128,12 @@
 
     .subtitle {
       font-family: var(--mono);
-      font-size: 12px;
+      font-size: 11px;
       color: var(--muted);
-      margin-bottom: 32px;
+      margin-bottom: 30px;
       letter-spacing: 0.05em;
     }
 
-    /* Format Toggle */
     .format-toggle {
       display: flex;
       background: var(--bg);
@@ -162,15 +160,9 @@
       transition: all 0.2s;
     }
 
-    .format-btn.active {
-      background: var(--accent);
-      color: #000;
-    }
+    .format-btn.active { background: var(--accent); color: #fff; }
 
-    /* Inputs */
-    .field {
-      margin-bottom: 14px;
-    }
+    .field { margin-bottom: 14px; }
 
     label {
       display: block;
@@ -198,44 +190,27 @@
     input::placeholder { color: var(--muted); }
     input:focus { border-color: var(--accent); }
 
-    /* Download Button */
     .btn {
       width: 100%;
       padding: 15px;
       background: var(--accent);
-      color: #000;
+      color: #fff;
       border: none;
       border-radius: 12px;
       font-family: var(--sans);
       font-size: 15px;
       font-weight: 800;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
       cursor: pointer;
       margin-top: 8px;
       transition: all 0.2s;
-      position: relative;
-      overflow: hidden;
     }
 
-    .btn:hover:not(:disabled) {
-      background: #f0ff6e;
-      transform: translateY(-1px);
-    }
+    .btn:hover:not(:disabled) { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .btn:active:not(:disabled) { transform: translateY(0); }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* Progress */
-    .progress-section {
-      display: none;
-      margin-top: 24px;
-    }
-
+    .progress-section { display: none; margin-top: 24px; }
     .progress-section.visible { display: block; }
 
     .progress-header {
@@ -245,19 +220,8 @@
       margin-bottom: 10px;
     }
 
-    .progress-label {
-      font-family: var(--mono);
-      font-size: 12px;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-    }
-
-    .progress-pct {
-      font-family: var(--mono);
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--accent);
-    }
+    .progress-label { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+    .progress-pct { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--accent); }
 
     .progress-bar-track {
       height: 4px;
@@ -275,15 +239,8 @@
       width: 0%;
     }
 
-    .progress-meta {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--muted);
-      display: flex;
-      gap: 16px;
-    }
+    .progress-meta { font-family: var(--mono); font-size: 11px; color: var(--muted); display: flex; gap: 16px; }
 
-    /* Status messages */
     .status-msg {
       display: none;
       padding: 14px 16px;
@@ -296,17 +253,10 @@
     }
 
     .status-msg.visible { display: flex; }
-
     .status-msg.error {
-      background: rgba(255,69,69,0.1);
-      border: 1px solid rgba(255,69,69,0.2);
-      color: var(--red);
-    }
-
-    .status-msg.success {
-      background: rgba(74,222,128,0.08);
-      border: 1px solid rgba(74,222,128,0.2);
-      color: var(--green);
+      background: rgba(230,32,32,0.1);
+      border: 1px solid rgba(230,32,32,0.25);
+      color: #ff6b6b;
     }
 
     .download-link {
@@ -329,32 +279,17 @@
     }
 
     .download-link.visible { display: block; }
-    .download-link:hover {
-      background: var(--accent);
-      color: #000;
-    }
+    .download-link:hover { background: var(--accent); color: #fff; }
 
-    .divider {
-      height: 1px;
-      background: var(--border);
-      margin: 28px 0;
-    }
+    .divider { height: 1px; background: var(--border); margin: 28px 0; }
 
-    .footer {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--muted);
-      text-align: center;
-      letter-spacing: 0.05em;
-    }
+    .footer { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: center; letter-spacing: 0.04em; }
 
-    /* Spinner */
     .spinner {
       display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(0,0,0,0.2);
-      border-top-color: #000;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: #fff;
       border-radius: 50%;
       animation: spin 0.6s linear infinite;
       vertical-align: middle;
@@ -369,13 +304,7 @@
 <div class="card">
 
   <div class="brand">
-    <div class="brand-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-        <path d="M2 17l10 5 10-5"/>
-        <path d="M2 12l10 5 10-5"/>
-      </svg>
-    </div>
+    <div class="brand-icon">AMG</div>
     <div>
       <div class="brand-name">AMG Productions</div>
       <div class="brand-tag">internal tool — v1.0</div>
@@ -385,29 +314,18 @@
   <h1>Download<br/><span>Any Video</span></h1>
   <p class="subtitle">// premiere-ready mp4 · h264 + aac · highest quality</p>
 
-  <!-- Format Toggle -->
   <div class="format-toggle">
     <button class="format-btn active" id="btn-mp4" onclick="setFormat('mp4')">MP4 Video</button>
     <button class="format-btn" id="btn-audio" onclick="setFormat('audio')">MP3 Audio</button>
   </div>
 
-  <!-- URL -->
   <div class="field">
     <label>YouTube URL</label>
     <input type="url" id="url-input" placeholder="https://youtube.com/watch?v=..." />
   </div>
 
-  <!-- Password -->
-  <div class="field">
-    <label>Team Password</label>
-    <input type="password" id="pwd-input" placeholder="••••••••" />
-  </div>
+  <button class="btn" id="dl-btn" onclick="startDownload()">Download</button>
 
-  <button class="btn" id="dl-btn" onclick="startDownload()">
-    Download
-  </button>
-
-  <!-- Progress -->
   <div class="progress-section" id="progress-section">
     <div class="progress-header">
       <span class="progress-label" id="progress-label">Connecting...</span>
@@ -422,24 +340,20 @@
     </div>
   </div>
 
-  <!-- Status Messages -->
   <div class="status-msg error" id="error-msg">
     <span>⚠</span>
     <span id="error-text">Something went wrong.</span>
   </div>
 
-  <a class="download-link" id="dl-link" href="#" download>
-    Save File to Computer
-  </a>
+  <a class="download-link" id="dl-link" href="#" download>Save File to Computer</a>
 
   <div class="divider"></div>
-  <div class="footer">Premiere-ready H.264 + AAC · No AV1 issues · AMG Internal Use Only</div>
+  <div class="footer">H.264 + AAC · No AV1 Issues · AMG Internal Use Only</div>
 
 </div>
 
 <script>
   let currentFormat = 'mp4';
-  let currentJobId = null;
   let eventSource = null;
 
   function setFormat(fmt) {
@@ -462,17 +376,12 @@
   function setBtn(loading) {
     const btn = document.getElementById('dl-btn');
     btn.disabled = loading;
-    btn.innerHTML = loading
-      ? '<span class="spinner"></span>Processing...'
-      : 'Download';
+    btn.innerHTML = loading ? '<span class="spinner"></span>Processing...' : 'Download';
   }
 
   async function startDownload() {
     const url = document.getElementById('url-input').value.trim();
-    const password = document.getElementById('pwd-input').value.trim();
-
     if (!url) return showError('Paste a YouTube URL first.');
-    if (!password) return showError('Enter the team password.');
 
     if (eventSource) { eventSource.close(); eventSource = null; }
     resetUI();
@@ -482,22 +391,16 @@
       const res = await fetch('/api/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url, format: currentFormat, password })
+        body: JSON.stringify({ url, format: currentFormat })
       });
 
       const data = await res.json();
+      if (!res.ok) { setBtn(false); return showError(data.error || 'Request failed.'); }
 
-      if (!res.ok) {
-        setBtn(false);
-        return showError(data.error || 'Request failed.');
-      }
-
-      currentJobId = data.jobId;
-      listenProgress(currentJobId);
-
+      listenProgress(data.jobId);
     } catch (err) {
       setBtn(false);
-      showError('Network error. Is the server running?');
+      showError('Network error. Server might be waking up — try again in 30s.');
     }
   }
 
@@ -512,8 +415,7 @@
         const pct = Math.round(msg.progress);
         document.getElementById('progress-fill').style.width = pct + '%';
         document.getElementById('progress-pct').textContent = pct + '%';
-        document.getElementById('progress-label').textContent =
-          pct < 99 ? 'Downloading...' : (msg.eta || 'Processing...');
+        document.getElementById('progress-label').textContent = pct < 99 ? 'Downloading...' : (msg.eta || 'Processing...');
         if (msg.speed) document.getElementById('meta-speed').textContent = msg.speed;
         if (msg.eta && pct < 99) document.getElementById('meta-eta').textContent = 'ETA ' + msg.eta;
       }
@@ -524,12 +426,10 @@
         document.getElementById('progress-label').textContent = 'Done!';
         document.getElementById('meta-speed').textContent = '';
         document.getElementById('meta-eta').textContent = '';
-
         const link = document.getElementById('dl-link');
         link.href = `/api/file/${msg.jobId}`;
         link.textContent = `Save — ${msg.filename}`;
         link.classList.add('visible');
-
         setBtn(false);
         eventSource.close();
       }
@@ -553,10 +453,7 @@
     document.getElementById('error-msg').classList.add('visible');
   }
 
-  // Enter key trigger
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') startDownload();
-  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Enter') startDownload(); });
 </script>
 
 </body>

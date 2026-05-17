@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DOWNLOAD_DIR = '/tmp/yt-dlp-downloads';
-const PASSWORD = process.env.PASSWORD || 'amg2024';
+const YTDLP = process.env.YTDLP_PATH || 'yt-dlp';
 
 if (!fs.existsSync(DOWNLOAD_DIR)) {
   fs.mkdirSync(DOWNLOAD_DIR, { recursive: true });
@@ -20,11 +20,7 @@ const jobs = new Map();
 
 // ── Start Download ───────────────────────────────────────────────────────────
 app.post('/api/start', (req, res) => {
-  const { url, format, password } = req.body;
-
-  if (password !== PASSWORD) {
-    return res.status(401).json({ error: 'Wrong password' });
-  }
+  const { url, format } = req.body;
 
   const isYouTube = url && (url.includes('youtube.com') || url.includes('youtu.be'));
   if (!url || !isYouTube) {
@@ -71,7 +67,7 @@ app.post('/api/start', (req, res) => {
   jobs.set(jobId, job);
 
   // ── Spawn yt-dlp ──────────────────────────────────────────────────────────
-  const proc = spawn('yt-dlp', args);
+  const proc = spawn(YTDLP, args);
 
   const parseOutput = (text) => {
     console.log('[yt-dlp]', text.trim());
