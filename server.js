@@ -46,8 +46,8 @@ app.post('/api/start', (req, res) => {
   const cookiesFile = process.env.COOKIES_BASE64 ? COOKIES_FILE : '/app/cookies.txt';
   const cookiesArgs = fs.existsSync(cookiesFile) ? ['--cookies', cookiesFile] : [];
   const baseArgs = [
-    '--js-runtimes', 'deno,node',
-    '--extractor-args', 'youtube:player_client=web,tv_embedded',
+    '--js-runtimes', 'deno',
+    '--extractor-args', 'youtube:player_client=web',
     '--no-check-certificates',
     ...cookiesArgs
   ];
@@ -223,5 +223,17 @@ setInterval(() => {
     });
   } catch (_) {}
 }, 3600000);
+
+
+// ── Upload Cookies ────────────────────────────────────────────────────────────
+app.post('/api/cookies', express.text({ type: '*/*', limit: '1mb' }), (req, res) => {
+  try {
+    fs.writeFileSync(COOKIES_FILE, req.body);
+    console.log('[cookies] Updated via upload endpoint');
+    res.json({ ok: true, message: 'Cookies updated!' });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
 app.listen(PORT, () => console.log(`AMG Downloader running on port ${PORT}`));

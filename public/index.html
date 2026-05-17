@@ -297,6 +297,41 @@
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    .cookies-section {
+      margin-top: 20px;
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .cookies-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+    .cookies-header:hover { background: rgba(255,255,255,0.02); }
+    .cookies-body { display: none; padding: 0 16px 16px; }
+    .cookies-body.open { display: block; }
+    .cookies-hint { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 12px; line-height: 1.6; }
+    .cookies-drop {
+      border: 1px dashed var(--border-light);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cookies-drop:hover { border-color: var(--accent); color: var(--accent); }
+
   </style>
 </head>
 <body>
@@ -346,6 +381,23 @@
   </div>
 
   <a class="download-link" id="dl-link" href="#" download>Save File to Computer</a>
+
+
+  <!-- Cookies Upload -->
+  <div class="cookies-section" id="cookies-section">
+    <div class="cookies-header" onclick="toggleCookies()">
+      <span class="cookies-label">⚙ Refresh YouTube Cookies</span>
+      <span class="cookies-arrow" id="cookies-arrow">▼</span>
+    </div>
+    <div class="cookies-body" id="cookies-body">
+      <p class="cookies-hint">Export cookies.txt from Chrome using "Get cookies.txt LOCALLY" extension on youtube.com, then upload here.</p>
+      <div class="cookies-drop" id="cookies-drop" onclick="document.getElementById('cookies-file').click()">
+        <span id="cookies-drop-text">Click to select cookies.txt</span>
+        <input type="file" id="cookies-file" accept=".txt" style="display:none" onchange="uploadCookies(this)"/>
+      </div>
+      <div class="status-msg" id="cookies-msg" style="margin-top:10px;"></div>
+    </div>
+  </div>
 
   <div class="divider"></div>
   <div class="footer">H.264 + AAC · No AV1 Issues · AMG Internal Use Only</div>
@@ -451,6 +503,36 @@
   function showError(msg) {
     document.getElementById('error-text').textContent = msg;
     document.getElementById('error-msg').classList.add('visible');
+  }
+
+
+  function toggleCookies() {
+    const body = document.getElementById('cookies-body');
+    const arrow = document.getElementById('cookies-arrow');
+    body.classList.toggle('open');
+    arrow.textContent = body.classList.contains('open') ? '▲' : '▼';
+  }
+
+  async function uploadCookies(input) {
+    const file = input.files[0];
+    if (!file) return;
+    document.getElementById('cookies-drop-text').textContent = 'Uploading...';
+    try {
+      const text = await file.text();
+      const res = await fetch('/api/cookies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: text
+      });
+      const data = await res.json();
+      const msg = document.getElementById('cookies-msg');
+      msg.style.display = 'flex';
+      msg.className = 'status-msg ' + (res.ok ? 'success' : 'error') + ' visible';
+      msg.innerHTML = res.ok ? '✓ Cookies updated! Try downloading now.' : '⚠ ' + (data.error || 'Failed');
+      document.getElementById('cookies-drop-text').textContent = res.ok ? '✓ ' + file.name : 'Try again';
+    } catch(e) {
+      document.getElementById('cookies-drop-text').textContent = 'Error — try again';
+    }
   }
 
   document.addEventListener('keydown', (e) => { if (e.key === 'Enter') startDownload(); });
