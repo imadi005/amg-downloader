@@ -13,6 +13,18 @@ if (!fs.existsSync(DOWNLOAD_DIR)) {
   fs.mkdirSync(DOWNLOAD_DIR, { recursive: true });
 }
 
+// Write cookies from env variable if present
+const COOKIES_FILE = '/tmp/yt-dlp-cookies.txt';
+if (process.env.COOKIES_BASE64) {
+  try {
+    const decoded = Buffer.from(process.env.COOKIES_BASE64, 'base64').toString('utf8');
+    fs.writeFileSync(COOKIES_FILE, decoded);
+    console.log('[cookies] Loaded from COOKIES_BASE64 env variable');
+  } catch (e) {
+    console.error('[cookies] Failed to decode COOKIES_BASE64:', e.message);
+  }
+}
+
 app.use(express.json());
 app.use(express.static('public'));
 
@@ -31,7 +43,7 @@ app.post('/api/start', (req, res) => {
   const outputTemplate = path.join(DOWNLOAD_DIR, `${jobId}_%(title)s.%(ext)s`);
 
   // Base flags: fix JS runtime + bypass bot detection
-  const cookiesFile = '/app/cookies.txt';
+  const cookiesFile = process.env.COOKIES_BASE64 ? COOKIES_FILE : '/app/cookies.txt';
   const cookiesArgs = fs.existsSync(cookiesFile) ? ['--cookies', cookiesFile] : [];
   const baseArgs = [
     '--js-runtimes', 'node',
