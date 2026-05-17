@@ -12,13 +12,12 @@ RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp \
     -o /usr/local/bin/yt-dlp \
     && chmod a+rx /usr/local/bin/yt-dlp
 
-# Install yt-dlp-ejs (required for YouTube n-challenge solving)
-RUN npm install -g yt-dlp-ejs
+# Pre-fetch yt-dlp-ejs component from GitHub at build time
+RUN yt-dlp --allow-unplayable-formats --remote-components ejs:github -v --simulate "https://www.youtube.com/watch?v=dQw4w9WgXcQ" 2>&1 || true
 
 # Verify installs
 RUN yt-dlp --version && ffmpeg -version | head -1 && node --version
 
-# Create dirs
 RUN mkdir -p /tmp/yt-dlp-downloads /app
 
 WORKDIR /app
